@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - Tour Operator{% endblock %}
+
+{% block content %}
+<h1>My Bookings</h1>
+
+{% if bookings %}
+    <div class="row">
+        {% for booking in bookings %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">Booking #{{ booking.id }}</h6>
+                        <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% elif booking.status == 'cancelled' %}danger{% else %}secondary{% endif %}">
+                            {{ booking.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ booking.tour_date.tour_package.name }}</h5>
+                        <div class="booking-details">
+                            <p class="mb-1"><strong>Dates:</strong> {{ booking.tour_date.start_date }} - {{ booking.tour_date.end_date }}</p>
+                            <p class="mb-1"><strong>Participants:</strong> {{ booking.participants }}</p>
+                            <p class="mb-1"><strong>Total:</strong> ₹{{ booking.total_price }}</p>
+                            <p class="mb-1"><strong>Booked:</strong> {{ booking.booking_date|date:"M d, Y" }}</p>
+                            {% if booking.guide %}
+                                <p class="mb-1"><strong>Guide:</strong> {{ booking.guide }}</p>
+                            {% endif %}
+                        </div>
+
+                        {% if booking.special_requests %}
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <strong>Special Requests:</strong> {{ booking.special_requests|truncatewords:10 }}
+                                </small>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'tour_detail' booking.tour_date.tour_package.id %}" class="btn btn-sm btn-outline-primary">View Tour</a>
+                            {% if booking.status == 'completed' %}
+                                {% load feedback_tags %}
+                                {% if not booking|has_feedback %}
+                                    <a href="{% url 'submit_feedback' booking.id %}" class="btn btn-sm btn-success">Leave Feedback</a>
+                                {% else %}
+                                    <span class="badge bg-info">Feedback Submitted</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4>No bookings yet</h4>
+        <p>You haven't made any bookings yet. Explore our tours and start your adventure!</p>
+        <a href="{% url 'tour_list' %}" class="btn btn-primary">Browse Tours</a>
+    </div>
+{% endif %}
+{% endblock %}

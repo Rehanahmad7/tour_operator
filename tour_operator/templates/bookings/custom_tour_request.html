@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Custom Tour Request - Tour Operator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>Custom Tour Request</h1>
+        <p class="lead">Can't find the perfect tour? Let us create a customized experience just for you!</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="card">
+                <div class="card-header">
+                    <h5>Tell us about your dream tour</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.destination.id_for_label }}" class="form-label">Destination</label>
+                            {{ form.destination }}
+                            {% if form.destination.errors %}
+                                <div class="text-danger">{{ form.destination.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.duration.id_for_label }}" class="form-label">Duration (days)</label>
+                            {{ form.duration }}
+                            {% if form.duration.errors %}
+                                <div class="text-danger">{{ form.duration.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.participants.id_for_label }}" class="form-label">Number of Participants</label>
+                            {{ form.participants }}
+                            {% if form.participants.errors %}
+                                <div class="text-danger">{{ form.participants.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.budget_range.id_for_label }}" class="form-label">Budget Range</label>
+                            {{ form.budget_range }}
+                            {% if form.budget_range.errors %}
+                                <div class="text-danger">{{ form.budget_range.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.preferred_dates.id_for_label }}" class="form-label">Preferred Dates</label>
+                        {{ form.preferred_dates }}
+                        {% if form.preferred_dates.errors %}
+                            <div class="text-danger">{{ form.preferred_dates.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.special_requirements.id_for_label }}" class="form-label">Special Requirements</label>
+                        {{ form.special_requirements }}
+                        {% if form.special_requirements.errors %}
+                            <div class="text-danger">{{ form.special_requirements.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Include any special dietary requirements, accessibility needs, activity preferences, etc.</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                    <a href="{% url 'tour_list' %}" class="btn btn-secondary">Browse Existing Tours</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6>How It Works</h6>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li class="mb-2">Submit your custom tour requirements</li>
+                    <li class="mb-2">Our team will review and contact you within 24 hours</li>
+                    <li class="mb-2">We'll create a personalized itinerary and quote</li>
+                    <li class="mb-2">Make adjustments until it's perfect</li>
+                    <li class="mb-2">Book your dream tour!</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6>Popular Custom Requests</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">• Photography focused tours</li>
+                    <li class="mb-2">• Adventure and extreme sports</li>
+                    <li class="mb-2">• Cultural immersion experiences</li>
+                    <li class="mb-2">• Family-friendly adventures</li>
+                    <li class="mb-2">• Luxury eco-tours</li>
+                    <li class="mb-2">• Multi-country journeys</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

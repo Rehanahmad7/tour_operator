@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Reviews - Tour Operator{% endblock %}
+
+{% block content %}
+<h1>Customer Reviews</h1>
+<p class="lead">See what our customers are saying about their adventures with us!</p>
+
+{% if feedbacks %}
+    <div class="row">
+        {% for feedback in feedbacks %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h6 class="card-title mb-0">{{ feedback.booking.tour_date.tour_package.name }}</h6>
+                            <div class="rating">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= feedback.overall_rating %}
+                                        <span class="text-warning">★</span>
+                                    {% else %}
+                                        <span class="text-muted">☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="feedback-ratings mb-3">
+                            <small class="text-muted">
+                                <div class="row">
+                                    <div class="col-6">
+                                        Guide:
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= feedback.guide_rating %}★{% else %}☆{% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="col-6">
+                                        Value:
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= feedback.value_for_money_rating %}★{% else %}☆{% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </small>
+                        </div>
+
+                        <p class="card-text">{{ feedback.comments|truncatewords:30 }}</p>
+
+                        {% if feedback.would_recommend %}
+                            <div class="badge bg-success mb-2">
+                                ✓ Recommends this tour
+                            </div>
+                        {% endif %}
+
+                        <div class="text-muted">
+                            <small>
+                                <strong>{{ feedback.booking.customer.user.first_name }}</strong> •
+                                {{ feedback.created_at|date:"M Y" }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+        <p class="text-muted">Showing recent reviews. More coming soon!</p>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4>No reviews yet</h4>
+        <p>Be the first to leave a review after completing a tour!</p>
+        <a href="{% url 'tour_list' %}" class="btn btn-primary">Browse Tours</a>
+    </div>
+{% endif %}
+{% endblock %}

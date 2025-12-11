@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Guide - Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #343a40;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            background-color: #007bff;
+        }
+        .navbar a:hover {
+            background-color: #0056b3;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-group input {
+            width: auto;
+            margin-right: 10px;
+        }
+        .btn {
+            padding: 12px 30px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Edit Guide: {{ guide.user.first_name }} {{ guide.user.last_name }}</h1>
+        <a href="{% url 'admin_guides' %}">Back to Guides</a>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <form method="post">
+                {% csrf_token %}
+
+                <h3>User Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">First Name:</label>
+                        <input type="text" id="first_name" name="first_name" value="{{ guide.user.first_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" id="last_name" name="last_name" value="{{ guide.user.last_name }}" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" value="{{ guide.user.email }}" required>
+                </div>
+
+                <h3>Guide Profile</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="text" id="phone" name="phone" value="{{ guide.phone }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="experience_years">Years of Experience:</label>
+                        <input type="number" id="experience_years" name="experience_years" value="{{ guide.experience_years }}" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="languages">Languages (comma-separated):</label>
+                    <input type="text" id="languages" name="languages" value="{{ guide.languages }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="specializations">Specializations:</label>
+                    <textarea id="specializations" name="specializations">{{ guide.specializations }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">Biography:</label>
+                    <textarea id="bio" name="bio" style="height: 120px;">{{ guide.bio }}</textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rating">Rating (0-5):</label>
+                        <input type="number" id="rating" name="rating" step="0.1" min="0" max="5" value="{{ guide.rating }}">
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="is_available" name="is_available" {% if guide.is_available %}checked{% endif %}>
+                            <label for="is_available">Available for Tours</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Update Guide</button>
+                <a href="{% url 'admin_guides' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - {{ guide.user.first_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .profile-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .profile-header h2 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .profile-header p {
+            color: #666;
+            margin: 0;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .bio-textarea {
+            height: 120px !important;
+        }
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: transform 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        }
+        .current-info {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .current-info h3 {
+            margin: 0 0 15px 0;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .info-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+        .info-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .info-value {
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .messages {
+            margin-bottom: 20px;
+        }
+        .messages div {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .messages .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .note {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+        }
+        .note h4 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>👤 Edit Profile</h1>
+        <a href="{% url 'guide_dashboard' %}">← Back to Dashboard</a>
+    </div>
+
+    <div class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="current-info">
+            <h3>Current Profile Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Name</div>
+                    <div class="info-value">{{ guide.user.first_name }} {{ guide.user.last_name }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">{{ guide.user.email }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Experience</div>
+                    <div class="info-value">{{ guide.experience_years }} years</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Rating</div>
+                    <div class="info-value">⭐ {{ guide.rating }}/5.0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="note">
+            <h4>📝 Profile Update Guidelines</h4>
+            <p>You can update your personal information, contact details, and professional description. Please note that some information like experience years and ratings can only be updated by administrators.</p>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-header">
+                <h2>Update Your Profile</h2>
+                <p>Keep your information current to provide the best service to customers</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <h3 style="margin-bottom: 25px; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">Personal Information</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">First Name:</label>
+                        <input type="text" id="first_name" name="first_name" value="{{ guide.user.first_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" id="last_name" name="last_name" value="{{ guide.user.last_name }}" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" value="{{ guide.user.email }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" value="{{ guide.phone }}" placeholder="+1-234-567-8900">
+                </div>
+
+                <h3 style="margin: 40px 0 25px 0; color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">Professional Information</h3>
+
+                <div class="form-group">
+                    <label for="languages">Languages (comma-separated):</label>
+                    <input type="text" id="languages" name="languages" value="{{ guide.languages }}"
+                           placeholder="e.g., English, Spanish, French, German">
+                </div>
+
+                <div class="form-group">
+                    <label for="specializations">Specializations:</label>
+                    <textarea id="specializations" name="specializations"
+                              placeholder="e.g., Mountain trekking, Cultural tours, Wildlife safari, Photography tours">{{ guide.specializations }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">Professional Biography:</label>
+                    <textarea id="bio" name="bio" class="bio-textarea"
+                              placeholder="Tell customers about your background, experience, and what makes you a great guide...">{{ guide.bio }}</textarea>
+                </div>
+
+                <div style="margin-top: 40px; text-align: center;">
+                    <button type="submit" class="btn">💾 Save Changes</button>
+                    <a href="{% url 'guide_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <div style="margin-top: 30px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+            <h4 style="margin: 0 0 15px 0; color: #333;">📞 Need Help?</h4>
+            <p style="margin: 0; color: #666;">If you need to update information not available here (like experience years or account settings), please contact the admin team for assistance.</p>
+        </div>
+    </div>
+</body>
+</html>

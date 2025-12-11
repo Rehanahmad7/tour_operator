@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Tours - Tour Operator{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Available Tours</h1>
+</div>
+
+<div class="row">
+    {% for tour in tours %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                {% if tour.get_primary_image %}
+                    <img src="{{ tour.get_primary_image }}" class="card-img-top" alt="{{ tour.name }}" style="height: 250px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 250px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <div class="text-center">
+                            <i class="fas fa-mountain fa-3x mb-2"></i>
+                            <h5>{{ tour.name }}</h5>
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ tour.name }}</h5>
+                    <p class="card-text">{{ tour.description|truncatewords:15 }}</p>
+                    <div class="tour-details">
+                        <p class="mb-1"><strong>Duration:</strong> {{ tour.duration }} days</p>
+                        <p class="mb-1"><strong>Location:</strong> {{ tour.location }}</p>
+                        <p class="mb-1"><strong>Difficulty:</strong>
+                            <span class="badge bg-{% if tour.difficulty == 'easy' %}success{% elif tour.difficulty == 'moderate' %}warning{% else %}danger{% endif %}">
+                                {{ tour.get_difficulty_display }}
+                            </span>
+                        </p>
+                        <p class="mb-1"><strong>Max Participants:</strong> {{ tour.max_participants }}</p>
+                        <h5 class="text-primary">₹{{ tour.price }} per person</h5>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'tour_detail' tour.id %}" class="btn btn-primary w-100">View Details</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h4>No tours available</h4>
+                <p>We're currently updating our tour offerings. Please check back soon!</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

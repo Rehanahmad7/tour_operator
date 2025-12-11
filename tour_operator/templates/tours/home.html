@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Tour Operator{% endblock %}
+
+{% block content %}
+<div class="hero-section bg-primary text-white text-center py-5 mb-5">
+    <div class="container">
+        <h1 class="display-4">Welcome to Adventure Tours</h1>
+        <p class="lead">Discover amazing destinations with our expert guides</p>
+        <a href="{% url 'tour_list' %}" class="btn btn-light btn-lg">Explore Tours</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <h2>Featured Tours</h2>
+        <div class="row">
+            {% for tour in featured_tours %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        {% if tour.get_primary_image %}
+                            <img src="{{ tour.get_primary_image }}" class="card-img-top" alt="{{ tour.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                <div class="text-center">
+                                    <i class="fas fa-mountain fa-2x mb-2"></i>
+                                    <h6>{{ tour.name }}</h6>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ tour.name }}</h5>
+                            <p class="card-text">{{ tour.description|truncatewords:20 }}</p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    {{ tour.duration }} days | {{ tour.location }} | ₹{{ tour.price }}
+                                </small>
+                            </p>
+                            <a href="{% url 'tour_detail' tour.id %}" class="btn btn-primary mt-auto">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No tours available at the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Why Choose Us?</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">✓ Expert local guides</li>
+                    <li class="mb-2">✓ Small group sizes</li>
+                    <li class="mb-2">✓ Customizable itineraries</li>
+                    <li class="mb-2">✓ 24/7 support</li>
+                    <li class="mb-2">✓ Best price guarantee</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Need a Custom Tour?</h5>
+            </div>
+            <div class="card-body">
+                <p>Can't find what you're looking for? Let us create a personalized tour just for you!</p>
+                <a href="{% url 'custom_tour_request' %}" class="btn btn-outline-primary">Request Custom Tour</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

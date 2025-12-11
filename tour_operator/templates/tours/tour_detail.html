@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tour.name }} - Tour Operator{% endblock %}
+
+{% block content %}
+{% if tour.get_all_images %}
+    <!-- Image Gallery -->
+    <div class="mb-4">
+        <div class="row">
+            {% if tour.get_primary_image %}
+                <div class="col-md-8">
+                    <img id="main-image" src="{{ tour.get_primary_image }}" class="img-fluid rounded shadow-sm" alt="{{ tour.name }}" style="height: 400px; width: 100%; object-fit: cover;">
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+                        {% for image in tour.get_all_images %}
+                            {% if forloop.counter0 <= 3 %}
+                                <div class="col-6 mb-2">
+                                    <img src="{{ image.image_url }}" class="img-fluid rounded shadow-sm tour-gallery-thumb{% if image.is_primary %} active-thumb{% endif %}" alt="{{ image.caption|default:tour.name }}" style="height: 120px; width: 100%; object-fit: cover; cursor: pointer; border: {% if image.is_primary %}3px solid #007bff{% else %}2px solid transparent{% endif %};" onclick="switchMainImage('{{ image.image_url }}', '{{ image.caption|default:tour.name }}', this)">
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="row">
+                        {% for image in tour.get_all_images %}
+                            <div class="col-md-4 mb-3">
+                                <img src="{{ image.image_url }}" class="img-fluid rounded shadow-sm" alt="{{ image.caption|default:tour.name }}" style="height: 250px; width: 100%; object-fit: cover;">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-8">
+        <h1>{{ tour.name }}</h1>
+        <p class="lead">{{ tour.description }}</p>
+
+        <div class="tour-info-grid mb-4">
+            <div class="row">
+                <div class="col-sm-6 mb-3">
+                    <strong>Duration:</strong> {{ tour.duration }} days
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <strong>Location:</strong> {{ tour.location }}
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <strong>Difficulty:</strong>
+                    <span class="badge bg-{% if tour.difficulty == 'easy' %}success{% elif tour.difficulty == 'moderate' %}warning{% else %}danger{% endif %}">
+                        {{ tour.get_difficulty_display }}
+                    </span>
+                </div>
+                <div class="col-sm-6 mb-3">
+                    <strong>Max Participants:</strong> {{ tour.max_participants }}
+                </div>
+            </div>
+        </div>
+
+        <h3>Itinerary</h3>
+        <div class="itinerary mb-4">
+            {{ tour.itinerary|linebreaks }}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Included Services</h4>
+                <div class="included-services">
+                    {{ tour.included_services|linebreaks }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h4>Excluded Services</h4>
+                <div class="excluded-services">
+                    {{ tour.excluded_services|linebreaks }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Book This Tour</h5>
+            </div>
+            <div class="card-body">
+                <h4 class="text-primary mb-3">₹{{ tour.price }} per person</h4>
+
+                {% if tour_dates %}
+                    <h6>Available Dates:</h6>
+                    {% for date in tour_dates %}
+                        <div class="date-option mb-2 p-2 border rounded">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ date.start_date }} - {{ date.end_date }}</strong><br>
+                                    <small class="text-muted">{{ date.available_spots }} spots available</small>
+                                </div>
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'book_tour' date.id %}" class="btn btn-sm btn-primary">Book</a>
+                                {% else %}
+                                    <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary">Login to Book</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-warning">
+                        <p>No dates available for this tour currently.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6>Need Help?</h6>
+            </div>
+            <div class="card-body">
+                <p>Contact our travel experts for more information or custom requests.</p>
+                <a href="{% url 'custom_tour_request' %}" class="btn btn-outline-primary btn-sm">Custom Tour Request</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function switchMainImage(imageUrl, caption, clickedThumb) {
+    const mainImage = document.getElementById('main-image');
+    if (mainImage) {
+        mainImage.src = imageUrl;
+        mainImage.alt = caption;
+    }
+
+    // Update thumbnail borders to show which is active
+    const allThumbs = document.querySelectorAll('.tour-gallery-thumb');
+    allThumbs.forEach(thumb => {
+        thumb.style.border = '2px solid transparent';
+        thumb.classList.remove('active-thumb');
+    });
+
+    if (clickedThumb) {
+        clickedThumb.style.border = '3px solid #007bff';
+        clickedThumb.classList.add('active-thumb');
+    }
+}
+</script>
+{% endblock %}

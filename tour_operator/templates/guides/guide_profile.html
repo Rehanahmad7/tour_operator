@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ guide.user.first_name }} {{ guide.user.last_name }} - Guide Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h1 class="mb-0">{{ guide.user.first_name }} {{ guide.user.last_name }}</h1>
+                    <div class="guide-status">
+                        {% if guide.is_available %}
+                            <span class="badge bg-success">Available for Tours</span>
+                        {% else %}
+                            <span class="badge bg-danger">Currently Unavailable</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6>Experience & Background</h6>
+                        <p><strong>Years of Experience:</strong> {{ guide.experience_years }} year{{ guide.experience_years|pluralize }}</p>
+                        <p><strong>Languages:</strong> {{ guide.languages }}</p>
+                        <p><strong>Member Since:</strong> {{ guide.created_at|date:"F Y" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Ratings & Reviews</h6>
+                        {% if guide.rating > 0 %}
+                            <div class="rating-display mb-2">
+                                <span class="h4 text-warning">⭐ {{ guide.rating }}/5.0</span>
+                            </div>
+                            {% if feedback_count > 0 %}
+                                <p><small class="text-muted">Based on {{ feedback_count }} review{{ feedback_count|pluralize }}</small></p>
+                                {% if avg_knowledge > 0 %}
+                                    <div class="detailed-ratings">
+                                        <p class="mb-1"><small><strong>Knowledge:</strong> {{ avg_knowledge }}/5.0</small></p>
+                                        <p class="mb-1"><small><strong>Communication:</strong> {{ avg_communication }}/5.0</small></p>
+                                        <p class="mb-1"><small><strong>Professionalism:</strong> {{ avg_professionalism }}/5.0</small></p>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            <p class="text-muted">New guide - no ratings yet</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if guide.specializations %}
+                    <div class="specializations mb-4">
+                        <h6>Specializations</h6>
+                        <p>{{ guide.specializations }}</p>
+                    </div>
+                {% endif %}
+
+                {% if guide.bio %}
+                    <div class="biography">
+                        <h6>About {{ guide.user.first_name }}</h6>
+                        <p>{{ guide.bio }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if recent_bookings %}
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Tours</h5>
+                </div>
+                <div class="card-body">
+                    {% for booking in recent_bookings %}
+                        <div class="tour-item mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ booking.tour_date.tour_package.name }}</h6>
+                                    <p class="mb-1 text-muted">
+                                        {{ booking.tour_date.start_date }} - {{ booking.tour_date.end_date }}
+                                    </p>
+                                    <small class="text-muted">{{ booking.participants }} participant{{ booking.participants|pluralize }}</small>
+                                </div>
+                                <span class="badge bg-{% if booking.status == 'completed' %}success{% else %}primary{% endif %}">
+                                    {{ booking.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6>Book a Tour</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Interested in having {{ guide.user.first_name }} as your guide?</p>
+                <a href="{% url 'tour_list' %}" class="btn btn-primary w-100 mb-2">Browse Available Tours</a>
+                <a href="{% url 'custom_tour_request' %}" class="btn btn-outline-secondary w-100">Request Custom Tour</a>
+                <small class="text-muted mt-2 d-block">
+                    You can request {{ guide.user.first_name }} as your guide during the booking process or in special requests.
+                </small>
+            </div>
+        </div>
+
+        {% if recent_feedback %}
+            <div class="card">
+                <div class="card-header">
+                    <h6>Recent Reviews</h6>
+                </div>
+                <div class="card-body">
+                    {% for feedback in recent_feedback %}
+                        <div class="review-item mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                            <div class="rating mb-1">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= feedback.knowledge_rating %}
+                                        <span class="text-warning">★</span>
+                                    {% else %}
+                                        <span class="text-muted">☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                                <small class="text-muted ms-2">{{ feedback.created_at|date:"M Y" }}</small>
+                            </div>
+                            <p class="mb-1">
+                                <small>{{ feedback.comments|truncatewords:15 }}</small>
+                            </p>
+                            <small class="text-muted">
+                                Tour: {{ feedback.booking.tour_date.tour_package.name }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                    {% if feedback_count > 5 %}
+                        <small class="text-muted">
+                            Showing 5 of {{ feedback_count }} reviews
+                        </small>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.rating-display {
+    font-size: 1.2em;
+}
+
+.detailed-ratings p {
+    margin-bottom: 0.25rem;
+}
+
+.tour-item {
+    transition: background-color 0.2s ease;
+}
+
+.tour-item:hover {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 10px;
+    margin: -10px;
+}
+
+.review-item {
+    font-size: 0.9em;
+}
+</style>
+{% endblock %}

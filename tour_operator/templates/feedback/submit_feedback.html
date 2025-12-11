@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Feedback - Tour Operator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>Submit Feedback</h1>
+        <p class="lead">We'd love to hear about your experience!</p>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ booking.tour_date.tour_package.name }}</h5>
+                <p><strong>Dates:</strong> {{ booking.tour_date.start_date }} - {{ booking.tour_date.end_date }}</p>
+                {% if booking.guide %}
+                    <p><strong>Guide:</strong> {{ booking.guide }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Tour Feedback</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ tour_form.overall_rating.id_for_label }}" class="form-label">Overall Rating</label>
+                            {{ tour_form.overall_rating }}
+                            {% if tour_form.overall_rating.errors %}
+                                <div class="text-danger">{{ tour_form.overall_rating.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ tour_form.guide_rating.id_for_label }}" class="form-label">Guide Rating</label>
+                            {{ tour_form.guide_rating }}
+                            {% if tour_form.guide_rating.errors %}
+                                <div class="text-danger">{{ tour_form.guide_rating.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ tour_form.accommodation_rating.id_for_label }}" class="form-label">Accommodation Rating</label>
+                            {{ tour_form.accommodation_rating }}
+                            {% if tour_form.accommodation_rating.errors %}
+                                <div class="text-danger">{{ tour_form.accommodation_rating.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ tour_form.value_for_money_rating.id_for_label }}" class="form-label">Value for Money</label>
+                            {{ tour_form.value_for_money_rating }}
+                            {% if tour_form.value_for_money_rating.errors %}
+                                <div class="text-danger">{{ tour_form.value_for_money_rating.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ tour_form.comments.id_for_label }}" class="form-label">Comments</label>
+                        {{ tour_form.comments }}
+                        {% if tour_form.comments.errors %}
+                            <div class="text-danger">{{ tour_form.comments.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ tour_form.would_recommend }}
+                            <label class="form-check-label" for="{{ tour_form.would_recommend.id_for_label }}">
+                                I would recommend this tour to others
+                            </label>
+                        </div>
+                        {% if tour_form.would_recommend.errors %}
+                            <div class="text-danger">{{ tour_form.would_recommend.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ tour_form.suggestions.id_for_label }}" class="form-label">Suggestions for Improvement</label>
+                        {{ tour_form.suggestions }}
+                        {% if tour_form.suggestions.errors %}
+                            <div class="text-danger">{{ tour_form.suggestions.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if guide_form %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Guide Feedback</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ guide_form.knowledge_rating.id_for_label }}" class="form-label">Knowledge</label>
+                                {{ guide_form.knowledge_rating }}
+                                {% if guide_form.knowledge_rating.errors %}
+                                    <div class="text-danger">{{ guide_form.knowledge_rating.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ guide_form.communication_rating.id_for_label }}" class="form-label">Communication</label>
+                                {{ guide_form.communication_rating }}
+                                {% if guide_form.communication_rating.errors %}
+                                    <div class="text-danger">{{ guide_form.communication_rating.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ guide_form.professionalism_rating.id_for_label }}" class="form-label">Professionalism</label>
+                                {{ guide_form.professionalism_rating }}
+                                {% if guide_form.professionalism_rating.errors %}
+                                    <div class="text-danger">{{ guide_form.professionalism_rating.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ guide_form.comments.id_for_label }}" class="form-label">Comments about your guide</label>
+                            {{ guide_form.comments }}
+                            {% if guide_form.comments.errors %}
+                                <div class="text-danger">{{ guide_form.comments.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'my_bookings' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6>Why Your Feedback Matters</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">✓ Helps us improve our services</li>
+                    <li class="mb-2">✓ Helps other travelers make decisions</li>
+                    <li class="mb-2">✓ Helps our guides improve</li>
+                    <li class="mb-2">✓ Shapes future tour offerings</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

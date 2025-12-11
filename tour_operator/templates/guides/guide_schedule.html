@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Schedule - {{ guide.user.first_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .update-form {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 200px 150px auto;
+            gap: 20px;
+            align-items: end;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .calendar-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .calendar-header {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: #ddd;
+        }
+        .calendar-day {
+            background-color: white;
+            padding: 15px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: background-color 0.3s;
+        }
+        .calendar-day.header {
+            background-color: #667eea;
+            color: white;
+            font-weight: bold;
+            min-height: auto;
+            padding: 15px 10px;
+        }
+        .calendar-day:hover:not(.header) {
+            background-color: #f8f9fa;
+        }
+        .date-number {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        .availability-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .available {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .unavailable {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .has-booking {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .today {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+        }
+        .past-date {
+            background-color: #f1f3f4;
+            color: #666;
+        }
+        .legend {
+            margin-top: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .legend h4 {
+            margin: 0 0 20px 0;
+            color: #333;
+        }
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        .messages {
+            margin-bottom: 20px;
+        }
+        .messages div {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .messages .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .booking-indicator {
+            font-size: 10px;
+            background-color: #007bff;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>📅 My Schedule</h1>
+        <a href="{% url 'guide_dashboard' %}">← Back to Dashboard</a>
+    </div>
+
+    <div class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="update-form">
+            <h3>Update Availability</h3>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">Select Date:</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="is_available" name="is_available" checked>
+                            <label for="is_available">Available for Tours</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn">Update Availability</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <h3>Next 60 Days Schedule</h3>
+                <p>Manage your availability and view tour bookings</p>
+            </div>
+
+            <div class="calendar-grid">
+                <!-- Calendar header -->
+                <div class="calendar-day header">Sun</div>
+                <div class="calendar-day header">Mon</div>
+                <div class="calendar-day header">Tue</div>
+                <div class="calendar-day header">Wed</div>
+                <div class="calendar-day header">Thu</div>
+                <div class="calendar-day header">Fri</div>
+                <div class="calendar-day header">Sat</div>
+
+                <!-- Calendar days -->
+                {% for availability in availability_dates %}
+                    <div class="calendar-day
+                        {% if availability.date == today %}today{% endif %}
+                        {% if availability.date < today %}past-date{% endif %}">
+
+                        <div class="date-number">{{ availability.date|date:"j" }}</div>
+
+                        {% if availability.has_booking %}
+                            <div class="availability-status has-booking">Tour Booked</div>
+                            <div class="booking-indicator">TOUR</div>
+                        {% elif availability.is_available %}
+                            <div class="availability-status available">Available</div>
+                        {% else %}
+                            <div class="availability-status unavailable">Unavailable</div>
+                        {% endif %}
+
+                        {% if availability.date == today %}
+                            <div style="font-size: 10px; font-weight: bold; color: #ffc107;">TODAY</div>
+                        {% endif %}
+                    </div>
+
+                    {% if forloop.counter|divisibleby:7 %}
+                        <!-- Start new row every 7 days -->
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="legend">
+            <h4>📋 Legend</h4>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #d4edda;"></div>
+                    <span><strong>Available</strong> - You're available for tour assignments</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f8d7da;"></div>
+                    <span><strong>Unavailable</strong> - You've marked yourself as unavailable</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #d1ecf1;"></div>
+                    <span><strong>Tour Booked</strong> - You have a confirmed tour on this date</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #fff3cd; border: 2px solid #ffc107;"></div>
+                    <span><strong>Today</strong> - Current date</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f1f3f4;"></div>
+                    <span><strong>Past Date</strong> - Previous dates (read-only)</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; border-radius: 15px;">
+            <h4 style="margin: 0 0 15px 0;">💡 Tips for Managing Your Schedule</h4>
+            <ul style="margin: 0; padding-left: 20px;">
+                <li>Set your availability in advance to help with tour planning</li>
+                <li>Days with tour bookings cannot be changed to unavailable</li>
+                <li>Update your availability regularly to ensure accurate scheduling</li>
+                <li>Contact admin if you need to change availability for booked tours</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

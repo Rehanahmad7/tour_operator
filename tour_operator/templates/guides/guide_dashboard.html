@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Dashboard - {{ guide.user.first_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .navbar-nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .logout-btn {
+            background-color: #dc3545 !important;
+        }
+        .logout-btn:hover {
+            background-color: #c82333 !important;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .welcome-banner {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .welcome-banner h2 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 32px;
+            color: #667eea;
+        }
+        .stat-card p {
+            margin: 0;
+            color: #666;
+            font-size: 16px;
+        }
+        .feedback-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .feedback-item {
+            text-align: center;
+        }
+        .feedback-score {
+            font-size: 20px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .feedback-label {
+            font-size: 12px;
+            color: #666;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .section-header {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .section-content {
+            padding: 20px;
+        }
+        .booking-item {
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: background-color 0.3s;
+        }
+        .booking-item:hover {
+            background-color: #f8f9fa;
+        }
+        .booking-item:last-child {
+            margin-bottom: 0;
+        }
+        .booking-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .booking-details {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-confirmed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-completed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .no-items {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .action-btn {
+            display: block;
+            text-align: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: white;
+        }
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+        }
+        .action-btn.warning {
+            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+        }
+        .messages {
+            margin-bottom: 20px;
+        }
+        .messages div {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .messages .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .messages .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🧭 Guide Portal</h1>
+        <div class="navbar-nav">
+            <a href="{% url 'guide_bookings' %}">My Bookings</a>
+            <a href="{% url 'guide_schedule' %}">Schedule</a>
+            <a href="{% url 'guide_feedback' %}">Feedback</a>
+            <a href="{% url 'guide_profile_edit' %}">Profile</a>
+            <a href="{% url 'guide_logout' %}" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="welcome-banner">
+            <h2>Welcome, {{ guide.user.first_name }}! 👋</h2>
+            <p>Here's your guide dashboard overview</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>{{ total_bookings }}</h3>
+                <p>Total Tours Led</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ upcoming_bookings }}</h3>
+                <p>Upcoming Tours</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ completed_tours }}</h3>
+                <p>Completed Tours</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ feedback_stats.total_feedback|default:0 }}</h3>
+                <p>Customer Reviews</p>
+                {% if feedback_stats.avg_knowledge %}
+                    <div class="feedback-summary">
+                        <div class="feedback-item">
+                            <div class="feedback-score">{{ feedback_stats.avg_knowledge|floatformat:1 }}</div>
+                            <div class="feedback-label">Knowledge</div>
+                        </div>
+                        <div class="feedback-item">
+                            <div class="feedback-score">{{ feedback_stats.avg_communication|floatformat:1 }}</div>
+                            <div class="feedback-label">Communication</div>
+                        </div>
+                        <div class="feedback-item">
+                            <div class="feedback-score">{{ feedback_stats.avg_professionalism|floatformat:1 }}</div>
+                            <div class="feedback-label">Professional</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="section-card">
+                <div class="section-header">📅 Upcoming Tours</div>
+                <div class="section-content">
+                    {% if upcoming_tours %}
+                        {% for booking in upcoming_tours %}
+                            <div class="booking-item">
+                                <div class="booking-title">{{ booking.tour_date.tour_package.name }}</div>
+                                <div class="booking-details">
+                                    <span>{{ booking.tour_date.start_date }} - {{ booking.participants }} guests</span>
+                                    <span class="status-badge status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-items">No upcoming tours scheduled</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">📋 Recent Bookings</div>
+                <div class="section-content">
+                    {% if recent_bookings %}
+                        {% for booking in recent_bookings %}
+                            <div class="booking-item">
+                                <div class="booking-title">{{ booking.tour_date.tour_package.name }}</div>
+                                <div class="booking-details">
+                                    <span>{{ booking.tour_date.start_date }} - {{ booking.participants }} guests</span>
+                                    <span class="status-badge status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-items">No recent bookings</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <a href="{% url 'guide_bookings' %}" class="action-btn">
+                📋 View All Bookings
+            </a>
+            <a href="{% url 'guide_schedule' %}" class="action-btn secondary">
+                📅 Manage Schedule
+            </a>
+            <a href="{% url 'guide_feedback' %}" class="action-btn warning">
+                ⭐ View Feedback
+            </a>
+            <a href="{% url 'guide_profile_edit' %}" class="action-btn">
+                👤 Edit Profile
+            </a>
+        </div>
+    </div>
+</body>
+</html>

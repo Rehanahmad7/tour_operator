@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Feedback - {{ guide.user.first_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .stats-overview {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .feedback-grid {
+            display: grid;
+            gap: 20px;
+        }
+        .feedback-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        .feedback-card:hover {
+            transform: translateY(-2px);
+        }
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f1f3f4;
+            padding-bottom: 15px;
+        }
+        .tour-info {
+            flex-grow: 1;
+        }
+        .tour-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .tour-date {
+            color: #666;
+            font-size: 14px;
+        }
+        .rating-display {
+            text-align: right;
+        }
+        .rating-stars {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #ffc107;
+        }
+        .rating-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .customer-info {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .customer-info h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 16px;
+        }
+        .customer-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .customer-detail {
+            display: flex;
+            justify-content: space-between;
+        }
+        .detail-label {
+            color: #666;
+            font-weight: normal;
+        }
+        .detail-value {
+            font-weight: bold;
+            color: #333;
+        }
+        .feedback-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .feedback-content h4 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 16px;
+        }
+        .feedback-text {
+            font-style: italic;
+            color: #555;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+        .no-feedback {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .no-feedback h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .no-feedback p {
+            color: #666;
+            font-size: 18px;
+        }
+        .rating-breakdown {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        .rating-bars {
+            margin-top: 20px;
+        }
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .rating-label {
+            width: 60px;
+            font-weight: bold;
+        }
+        .bar-container {
+            flex-grow: 1;
+            background: #f1f3f4;
+            border-radius: 10px;
+            height: 20px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        .bar-5 { background: linear-gradient(90deg, #00b894, #00cec9); }
+        .bar-4 { background: linear-gradient(90deg, #fdcb6e, #e17055); }
+        .bar-3 { background: linear-gradient(90deg, #ffeaa7, #fab1a0); }
+        .bar-2 { background: linear-gradient(90deg, #fd79a8, #e84393); }
+        .bar-1 { background: linear-gradient(90deg, #ff7675, #d63031); }
+        .bar-count {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>⭐ My Feedback</h1>
+        <a href="{% url 'guide_dashboard' %}">← Back to Dashboard</a>
+    </div>
+
+    <div class="container">
+        <div class="stats-overview">
+            <h3>Overall Performance Summary</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">{{ guide.rating|floatformat:1 }}</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_feedback }}</div>
+                    <div class="stat-label">Total Reviews</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ recent_feedback }}</div>
+                    <div class="stat-label">Recent Reviews (30 days)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{% widthratio positive_feedback total_feedback 100 %}%</div>
+                    <div class="stat-label">Positive Feedback</div>
+                </div>
+            </div>
+        </div>
+
+        {% if feedback_list %}
+            <div class="rating-breakdown">
+                <h4>Rating Breakdown</h4>
+                <div class="rating-bars">
+                    {% for rating in rating_counts %}
+                        <div class="rating-bar">
+                            <div class="rating-label">{{ rating.rating }}⭐</div>
+                            <div class="bar-container">
+                                <div class="bar-fill bar-{{ rating.rating }}"
+                                     style="width: {% if total_feedback > 0 %}{% widthratio rating.count total_feedback 100 %}{% else %}0{% endif %}%"></div>
+                            </div>
+                            <div class="bar-count">{{ rating.count }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="feedback-grid">
+                {% for feedback in feedback_list %}
+                    <div class="feedback-card">
+                        <div class="feedback-header">
+                            <div class="tour-info">
+                                <div class="tour-title">{{ feedback.booking.tour_date.tour_package.name }}</div>
+                                <div class="tour-date">Tour Date: {{ feedback.booking.tour_date.start_date|date:"M d, Y" }}</div>
+                            </div>
+                            <div class="rating-display">
+                                <div class="rating-stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= feedback.rating %}⭐{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="rating-number">{{ feedback.rating }}/5</div>
+                            </div>
+                        </div>
+
+                        <div class="customer-info">
+                            <h4>👤 Customer Information</h4>
+                            <div class="customer-details">
+                                <div class="customer-detail">
+                                    <span class="detail-label">Name:</span>
+                                    <span class="detail-value">{{ feedback.booking.customer.user.first_name }} {{ feedback.booking.customer.user.last_name }}</span>
+                                </div>
+                                <div class="customer-detail">
+                                    <span class="detail-label">Feedback Date:</span>
+                                    <span class="detail-value">{{ feedback.created_at|date:"M d, Y" }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if feedback.comments %}
+                            <div class="feedback-content">
+                                <h4>💬 Customer Comments</h4>
+                                <div class="feedback-text">"{{ feedback.comments }}"</div>
+                            </div>
+                        {% else %}
+                            <div class="feedback-content">
+                                <h4>💬 Customer Comments</h4>
+                                <div class="feedback-text" style="opacity: 0.6;">No written comments provided by the customer.</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-feedback">
+                <h3>No feedback received yet</h3>
+                <p>Once customers leave feedback for your tours, you'll see their reviews and ratings here.</p>
+            </div>
+        {% endif %}
+
+        <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; border-radius: 15px;">
+            <h4 style="margin: 0 0 15px 0;">💡 Tips for Improving Customer Satisfaction</h4>
+            <ul style="margin: 0; padding-left: 20px;">
+                <li>Provide detailed information about tour locations and activities</li>
+                <li>Be punctual and professional throughout the tour</li>
+                <li>Engage with customers and answer their questions enthusiastically</li>
+                <li>Follow up with customers to ensure they had a great experience</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

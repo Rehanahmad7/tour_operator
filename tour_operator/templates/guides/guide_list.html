@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Our Guides - Tour Operator{% endblock %}
+
+{% block content %}
+<h1>Meet Our Expert Guides</h1>
+<p class="lead">Discover the passionate professionals who will make your tour unforgettable!</p>
+
+{% if guides %}
+    <div class="row">
+        {% for guide in guides %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title mb-0">{{ guide.user.first_name }} {{ guide.user.last_name }}</h5>
+                            <div class="rating">
+                                {% if guide.rating > 0 %}
+                                    <span class="badge bg-warning text-dark">
+                                        ⭐ {{ guide.rating }}/5.0
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">New Guide</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="guide-info mb-3">
+                            <p class="mb-1">
+                                <strong>Experience:</strong> {{ guide.experience_years }} year{{ guide.experience_years|pluralize }}
+                            </p>
+                            <p class="mb-1">
+                                <strong>Languages:</strong> {{ guide.languages }}
+                            </p>
+                            {% if guide.specializations %}
+                                <p class="mb-1">
+                                    <strong>Specializations:</strong> {{ guide.specializations|truncatewords:8 }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        {% if guide.bio %}
+                            <p class="card-text text-muted">
+                                {{ guide.bio|truncatewords:20 }}
+                            </p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="availability-status">
+                                {% if guide.is_available %}
+                                    <span class="badge bg-success">Available</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Unavailable</span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'guide_profile' guide.id %}" class="btn btn-primary btn-sm">View Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h5>Want to Request a Specific Guide?</h5>
+                <p class="text-muted">You can make special requests when booking a tour, including guide preferences.</p>
+                <a href="{% url 'tour_list' %}" class="btn btn-outline-primary">Browse Tours</a>
+                <a href="{% url 'custom_tour_request' %}" class="btn btn-outline-secondary">Custom Tour Request</a>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-info text-center">
+        <h4>No guides available at the moment</h4>
+        <p>We're currently updating our guide directory. Please check back soon!</p>
+        <a href="{% url 'tour_list' %}" class="btn btn-primary">Browse Tours</a>
+    </div>
+{% endif %}
+
+<style>
+.rating .badge {
+    font-size: 0.8em;
+}
+
+.guide-info p {
+    font-size: 0.9em;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.availability-status .badge {
+    font-size: 0.75em;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Guide - Booking #{{ booking.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #343a40;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            background-color: #007bff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .booking-info {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .assign-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .detail-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .detail-value {
+            color: #333;
+        }
+        .guide-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .guide-card:hover {
+            background-color: #f8f9fa;
+            border-color: #007bff;
+        }
+        .guide-card.selected {
+            background-color: #e3f2fd;
+            border-color: #007bff;
+            border-width: 2px;
+        }
+        .guide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .guide-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #007bff;
+        }
+        .guide-rating {
+            background-color: #ffc107;
+            color: #212529;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .guide-details {
+            color: #666;
+            font-size: 14px;
+        }
+        .guide-specializations {
+            margin-top: 8px;
+            font-style: italic;
+            color: #555;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 12px 30px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .no-guides {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
+        .current-guide {
+            background-color: #d4edda;
+            border-color: #28a745;
+            border-width: 2px;
+        }
+        .remove-guide {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Assign Guide to Booking #{{ booking.id }}</h1>
+        <a href="{% url 'admin_booking_detail' booking.id %}">Back to Booking</a>
+    </div>
+
+    <div class="container">
+        <div class="booking-info">
+            <h3>Booking Details</h3>
+            <div class="detail-row">
+                <div class="detail-label">Tour:</div>
+                <div class="detail-value">{{ booking.tour_date.tour_package.name }}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Customer:</div>
+                <div class="detail-value">{{ booking.customer.user.first_name }} {{ booking.customer.user.last_name }}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Tour Dates:</div>
+                <div class="detail-value">{{ booking.tour_date.start_date }} to {{ booking.tour_date.end_date }}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Participants:</div>
+                <div class="detail-value">{{ booking.participants }}</div>
+            </div>
+            {% if booking.guide %}
+                <div class="detail-row">
+                    <div class="detail-label">Current Guide:</div>
+                    <div class="detail-value">{{ booking.guide.user.first_name }} {{ booking.guide.user.last_name }}</div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="assign-form">
+            <h3>Select Guide</h3>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% if available_guides %}
+                    <div class="form-group">
+                        {% for guide in available_guides %}
+                            <div class="guide-card {% if booking.guide and booking.guide.id == guide.id %}current-guide{% endif %}"
+                                 onclick="selectGuide({{ guide.id }})">
+                                <div class="guide-header">
+                                    <div class="guide-name">{{ guide.user.first_name }} {{ guide.user.last_name }}</div>
+                                    <div class="guide-rating">⭐ {{ guide.rating }}/5.0</div>
+                                </div>
+                                <div class="guide-details">
+                                    {{ guide.experience_years }} years experience | {{ guide.languages }}
+                                </div>
+                                <div class="guide-specializations">
+                                    {{ guide.specializations|truncatewords:10 }}
+                                </div>
+                                <input type="radio" name="guide_id" value="{{ guide.id }}"
+                                       id="guide_{{ guide.id }}" style="display: none;"
+                                       {% if booking.guide and booking.guide.id == guide.id %}checked{% endif %}>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="submit" class="btn">Assign Selected Guide</button>
+                {% else %}
+                    <div class="no-guides">
+                        No available guides found. All guides may be busy or unavailable.
+                    </div>
+                {% endif %}
+
+                {% if booking.guide %}
+                    <div class="remove-guide">
+                        <h4>Remove Current Guide</h4>
+                        <p>If you want to remove the current guide from this booking, click the button below.</p>
+                        <input type="radio" name="guide_id" value="" id="no_guide" style="display: none;">
+                        <button type="button" class="btn btn-danger" onclick="removeGuide()">Remove Guide</button>
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'admin_booking_detail' booking.id %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function selectGuide(guideId) {
+            // Remove selected class from all cards
+            document.querySelectorAll('.guide-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selected class to clicked card
+            event.currentTarget.classList.add('selected');
+
+            // Select the radio button
+            document.getElementById('guide_' + guideId).checked = true;
+            document.getElementById('no_guide').checked = false;
+        }
+
+        function removeGuide() {
+            // Remove selected class from all cards
+            document.querySelectorAll('.guide-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Uncheck all guide radio buttons
+            document.querySelectorAll('input[name="guide_id"]').forEach(radio => {
+                radio.checked = false;
+            });
+
+            // Check the no guide option
+            document.getElementById('no_guide').checked = true;
+
+            // Submit the form
+            document.querySelector('form').submit();
+        }
+
+        // Highlight currently selected guide on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkedRadio = document.querySelector('input[name="guide_id"]:checked');
+            if (checkedRadio && checkedRadio.value) {
+                const guideCard = checkedRadio.closest('.guide-card');
+                if (guideCard) {
+                    guideCard.classList.add('selected');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
