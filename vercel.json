@@ -1,0 +1,7 @@
+@'
+{
+  "builds": [
+    { "src": "Dockerfile", "use": "@vercel/docker" }
+  ]
+}
+'@ | Out-File -Encoding utf8 vercel.json
